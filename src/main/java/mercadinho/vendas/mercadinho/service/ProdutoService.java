@@ -1,10 +1,13 @@
 package mercadinho.vendas.mercadinho.service;
 
+
 import mercadinho.vendas.mercadinho.dtos.ProdutoRequestDTO;
 import mercadinho.vendas.mercadinho.dtos.ProdutoResponseDTO;
 import mercadinho.vendas.mercadinho.mapper.ProdutoMapper;
 import mercadinho.vendas.mercadinho.model.Produto;
 import mercadinho.vendas.mercadinho.repository.ProdutoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +16,16 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 
+
 @Service
 public class ProdutoService {
+
+
     @Autowired
     ProdutoRepository repository;
 
+
+    private static final Logger log = LoggerFactory.getLogger(ProdutoService.class);
     @Autowired
     private ProdutoMapper mapper;
 
@@ -25,21 +33,26 @@ public class ProdutoService {
         Produto produto = mapper.toProduto(produtoDTO);
         produto.setDataCadastro(LocalDate.now());
         repository.save(produto);
+        log.info("produto {} salvo", produtoDTO.getNome());
+
         return mapper.toProdutoResponseDTO(produto);
     }
 
     public List<ProdutoResponseDTO> listarProdutos() throws RuntimeException {
         validarProdutoCadastrado(repository.findAll());
+        log.info("obtido lista de produtos");
         return mapper.toListProdutoResponseDTO(repository.findAll());
     }
-
     public ProdutoResponseDTO pegarProdudo(Long id) {
+        log.info("obtido produto por id [{}]", id);
+
         return mapper.toProdutoResponseDTO(repository.getReferenceById(id));
     }
 
     public String apagarProduto(Long id) throws RuntimeException {
         existePoduto(id);
         repository.deleteById(id);
+        log.info("produto apagado por id [{}]",id);
         return "Deletado com Sucesso!";
     }
 
@@ -55,19 +68,11 @@ public class ProdutoService {
         }
     }
 
-    public Integer quantidadeProduto() {
-        return repository.buscarQuantidade();
-    }
-
-    public List<ProdutoResponseDTO> getByPreco(Double preco) {
-        List<Produto> response = repository.buscarPorValor(preco);
-        return mapper.toListProdutoResponseDTO(response);
-    }
 
     public List<ProdutoResponseDTO> buscarPorData(String dataInicio, String dataFim) {
         String dataf;
         dataf = validarDatasESempreRetornaDataFim(dataInicio, dataFim);
-
+        log.info("obtido lista de produtos por data");
 
         return mapper.toListProdutoResponseDTO(repository.buscarPorData(dataInicio, dataf));
     }
@@ -106,6 +111,29 @@ public class ProdutoService {
         } catch (DateTimeParseException e) {
             throw new RuntimeException("Formato da data [" + data + "] invalido!");
         }
+    }
+
+    public ProdutoResponseDTO editarProduto(Long id, ProdutoRequestDTO produtoRequestDTO) {
+        return mapper.toProdutoResponseDTO(editarCamposProduto(repository.getReferenceById(id), produtoRequestDTO));
+    }
+
+
+    private Produto editarCamposProduto(Produto produto, ProdutoRequestDTO produtoRequestDTO) {
+        String unidade = String.valueOf(produtoRequestDTO.getUnidade());
+
+        if (!(produtoRequestDTO.getNome() == null)) {
+            produto.setNome(produtoRequestDTO.getNome());
+        }
+        if (produtoRequestDTO.getPreco() != null) {
+            produto.setPreco(produtoRequestDTO.getPreco());
+        }
+        if (unidade.isEmpty()) {
+            produto.setUnidade(produtoRequestDTO.getUnidade());
+        }
+
+        repository.save(produto);
+        log.info("produto [{}] editado", produto.getNome());
+        return produto;
     }
 
 }

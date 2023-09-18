@@ -1,7 +1,7 @@
 package mercadinho.vendas.mercadinho.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+
 import mercadinho.vendas.mercadinho.dtos.BaseResponseDTO;
 import mercadinho.vendas.mercadinho.dtos.ProdutoRequestDTO;
 import mercadinho.vendas.mercadinho.service.ProdutoService;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class ProdutoController {
 
 
+
+
     @Autowired
     private ProdutoService service;
 
@@ -28,36 +30,23 @@ public class ProdutoController {
     @GetMapping("/todos")
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ResponseEntity<BaseResponseDTO> listarProdutos() {
-        try{
+        try {
             return BaseController.ok(service.listarProdutos());
-        } catch (RuntimeException e){
-            return BaseController.error(e.getMessage());
-        }
-    }
-    @GetMapping("/preco")
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ResponseEntity<BaseResponseDTO> listarProdutosPreco(@RequestParam Double valor) {
-        try{
-            return BaseController.ok(service.getByPreco(valor));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return BaseController.error(e.getMessage());
         }
     }
 
     @GetMapping("/id")
-    public ResponseEntity<BaseResponseDTO> pegarProduto(@RequestParam Long id) {
+    public ResponseEntity<BaseResponseDTO> buscarProdutoPorId(@RequestParam Long id) {
         return BaseController.ok(service.pegarProdudo(id));
     }
 
-    @GetMapping("/q")
-    public ResponseEntity<BaseResponseDTO> quantidade() {
-        return BaseController.ok(service.quantidadeProduto());
-    }
     @GetMapping("/data")
-    public ResponseEntity<BaseResponseDTO> listData(@RequestParam String dataInicio , @RequestParam String dataFim) {
-        try{
+    public ResponseEntity<BaseResponseDTO> listPorData(@RequestParam String dataInicio, @RequestParam String dataFim) {
+        try {
             return BaseController.ok(service.buscarPorData(dataInicio, dataFim));
-        } catch (RuntimeException r){
+        } catch (RuntimeException r) {
             return BaseController.error(r.getMessage());
         }
 
@@ -71,6 +60,11 @@ public class ProdutoController {
         } catch (RuntimeException e) {
             return BaseController.error(e.getMessage());
         }
+    }
+
+    @PatchMapping("/id/{id}")
+    public ResponseEntity<BaseResponseDTO> editarProduto(@RequestBody ProdutoRequestDTO produtoRequestDTO, @PathVariable Long id){
+        return BaseController.ok(service.editarProduto(id, produtoRequestDTO));
     }
 }
 

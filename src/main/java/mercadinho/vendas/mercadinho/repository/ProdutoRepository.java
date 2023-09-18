@@ -9,12 +9,8 @@ import java.util.List;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-    @Query(value = "select sum(unidade) from produto;", nativeQuery = true)
-    Integer buscarQuantidade();
 
-
-    @Query(value = "select * from produto where preco = :valor ", nativeQuery = true)
-    List<Produto> buscarPorValor(@Param("valor") Double valor);
     @Query(value = "select * from produto p where p.data_cadastro between :dataInicio and :dataFim", nativeQuery = true)
     List<Produto> buscarPorData(@Param("dataInicio") String dataInicio, @Param("dataFim") String dataFim);
+
 }

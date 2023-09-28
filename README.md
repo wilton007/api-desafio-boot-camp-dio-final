@@ -6,7 +6,7 @@ Iremos permitir no maximo 3 tarefas ativas por dia para cada usuario.
 
 CONSIDERAÇÕES GERAIS:
 
-Construiremos: USUARI, TAREFA
+Construiremos: USUARIO, TAREFA
 
 - GET - obrigatório
 
@@ -17,7 +17,7 @@ Construiremos: USUARI, TAREFA
 - DELETE - opcional
 
 - Pode criar/editar apenas alterando um status entre PENDENTE, EM ANDAMENTO e COCLUIDA.
-- Pode criar/editat apenas alterando um prioridade entre BAIXA, MEDIA e ALTA.
+- Pode criar/editar apenas alterando um prioridade entre BAIXA, MEDIA e ALTA.
 
 Todas as respostas devem vir com status 200 se deu certo e um status diferente de 200 se algo deu errado.
 As mensagens de erro devem vir sempre em português
